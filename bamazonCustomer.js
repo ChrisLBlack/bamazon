@@ -8,14 +8,17 @@ const connection = mysql.createConnection({
     database: "bamazon_DB"
 });
 
+let custHowMany = 0;
+let howManyOnHand = 0;
+
 function findItemID(arg) {
-    let query = connection.query(`SELECT item_id FROM products WHERE ?`, [{
+    let query = connection.query(`SELECT * FROM products WHERE ?`, [{
         item_id: arg
     }], (err, res) => {
         if (err) {
             throw err;
         };
-        console.log(res);
+        console.log(res[0].stock_quantity);
     });
 };
 
@@ -26,7 +29,8 @@ function findQuantity(arg) {
         if (err) {
             throw err;
         };
-        console.log(res);
+        // let howManyOnHand = res[0];
+        // console.log(res);
     });
     connection.end();
 };
@@ -42,8 +46,12 @@ inquirer.prompt([{
 ]).then(function (check) {
     if (NaN) {
         throw err
-    };
-    // console.log(check.productID);
+    }
+
+
+    let custHowMany = check.howMany
+    console.log(custHowMany);
     findItemID(check.productID);
-    findQuantity(check.howMany);
+    findQuantity();
+    
 });
