@@ -8,32 +8,8 @@ const connection = mysql.createConnection({
     database: "bamazon_DB"
 });
 
-let custHowMany = 0;
-let howManyOnHand = 0;
-
-function findItemID(arg) {
-    let query = connection.query(`SELECT * FROM products WHERE ?`, [{
-        item_id: arg
-    }], (err, res) => {
-        if (err) {
-            throw err;
-        };
-        console.log(res[0].stock_quantity);
-    });
-};
-
-function findQuantity(arg) {
-    let query = connection.query(`SELECT stock_quantity FROM products WHERE ?`, [{
-        stock_quantity: arg
-    }], (err, res) => {
-        if (err) {
-            throw err;
-        };
-        // let howManyOnHand = res[0];
-        // console.log(res);
-    });
-    connection.end();
-};
+let custHowMany = [];
+// let howManyOnHand = 0;
 
 inquirer.prompt([{
         name: "productID",
@@ -49,9 +25,30 @@ inquirer.prompt([{
     }
 
 
-    let custHowMany = check.howMany
+    custHowMany.push(parseInt(check.howMany));
     console.log(custHowMany);
     findItemID(check.productID);
-    findQuantity();
-    
+
 });
+
+function findItemID(arg) {
+    let query = connection.query(`SELECT * FROM products WHERE ?`, [{
+        item_id: arg
+    }], (err, res) => {
+        if (err) {
+            throw err;
+        };
+
+        let howManyOnHand = res[0].stock_quantity;
+
+        if (howManyOnHand >= custHowMany[0]) {
+            console.log("order placed")
+            howManyOnHand - custHowMany[0];
+            console.log(howManyOnHand);
+        } else {
+            console.log("Insufficient stock!");
+        };
+    });
+
+    connection.end();
+};
