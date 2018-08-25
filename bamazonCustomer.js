@@ -9,7 +9,8 @@ const connection = mysql.createConnection({
 });
 
 let custHowMany = [];
-// let howManyOnHand = 0;
+let howManyOnHand = [];
+let itemId = [];
 
 inquirer.prompt([{
         name: "productID",
@@ -24,31 +25,54 @@ inquirer.prompt([{
         throw err
     }
 
-
+    itemId.push(parseInt(check.productID))
     custHowMany.push(parseInt(check.howMany));
-    console.log(custHowMany);
     findItemID(check.productID);
 
 });
 
 function findItemID(arg) {
-    let query = connection.query(`SELECT * FROM products WHERE ?`, [{
+    let query = connection.query(`SELECT stock_quantity FROM products WHERE ?`, [{
         item_id: arg
     }], (err, res) => {
         if (err) {
             throw err;
         };
+        console.log(res[0].stock_quantity);
+        howManyOnHand.push(res[0].stock_quantity);
+        // console.log(howManyOnHand[0]);
 
-        let howManyOnHand = res[0].stock_quantity;
-
-        if (howManyOnHand >= custHowMany[0]) {
+        if (howManyOnHand[0] >= custHowMany[0]) {
             console.log("order placed")
-            howManyOnHand - custHowMany[0];
-            console.log(howManyOnHand);
+            howManyOnHand.push(howManyOnHand[0] - custHowMany[0]);
+            // let updateSql = connection.connect(`UPDATE products SET stock_quantity = ${howManyOnHand[1]} WHERE item_id = ${itemId[0]}`)
+            // connection.end();
+            // updateStock();
+            // console.log(howManyOnHand[0]);
+            updateStock();
+            connection.end();
+
         } else {
             console.log("Insufficient stock!");
+            console.log(`This item has: ${howManyOnHand[0]} on hand`);
+            // connection.end();
+
         };
     });
+    // connection.end();
+    // updateStock();
+};
 
-    connection.end();
+function updateStock() {
+    let updateSql = connection.query(`UPDATE bamazon_DB.products SET stock_quantity = ${howManyOnHand[1]} WHERE (item_id = ${itemId[0]});`, (err, res) => {
+        console.log(res);
+        if (err) {
+            throw err;
+        };
+
+        // connection.end();
+    });
+
+    // connection.end();
+
 };

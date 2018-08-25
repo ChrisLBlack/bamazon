@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS bamazon_db;
-CREATE database bamazon_db;
-USE bamazon_db;
+DROP DATABASE IF EXISTS bamazon_DB;
+CREATE database bamazon_DB;
+USE bamazon_DB;
 
 CREATE TABLE products (
     item_id INT(11) NOT NULL PRIMARY KEY,
@@ -11,7 +11,7 @@ CREATE TABLE products (
 );
 
 INSERT products (item_id, product_name, department_name, price, stock_quantity)
-VALUE (4001, "tooth brush", "health", 10.95, 12);
+VALUE (4001, "tooth brush", "health", 10.95, 11);
 
 INSERT products (item_id, product_name, department_name, price, stock_quantity)
 VALUE (3200, "blow dryer", "beauty", 29.99, 73);
