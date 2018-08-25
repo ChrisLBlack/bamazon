@@ -11,6 +11,7 @@ const connection = mysql.createConnection({
 let custHowMany = [];
 let howManyOnHand = [];
 let itemId = [];
+let howMuchMoney = [];
 
 inquirer.prompt([{
         name: "productID",
@@ -24,7 +25,6 @@ inquirer.prompt([{
     if (NaN) {
         throw err
     }
-
     itemId.push(parseInt(check.productID))
     custHowMany.push(parseInt(check.howMany));
     findItemID(check.productID);
@@ -32,47 +32,40 @@ inquirer.prompt([{
 });
 
 function findItemID(arg) {
-    let query = connection.query(`SELECT stock_quantity FROM products WHERE ?`, [{
+    let query = connection.query(`SELECT * FROM products WHERE ?`, [{
         item_id: arg
     }], (err, res) => {
         if (err) {
             throw err;
         };
-        console.log(res[0].stock_quantity);
-        howManyOnHand.push(res[0].stock_quantity);
-        // console.log(howManyOnHand[0]);
+
+        howManyOnHand.push(parseInt(res[0].stock_quantity));
+        howMuchMoney.push(parseFloat(res[0].price));
 
         if (howManyOnHand[0] >= custHowMany[0]) {
-            console.log("order placed")
             howManyOnHand.push(howManyOnHand[0] - custHowMany[0]);
-            // let updateSql = connection.connect(`UPDATE products SET stock_quantity = ${howManyOnHand[1]} WHERE item_id = ${itemId[0]}`)
-            // connection.end();
-            // updateStock();
-            // console.log(howManyOnHand[0]);
+            let total = custHowMany[0] * howMuchMoney[0];
+            console.log("Order placed");
+            console.log(`Your total will be: $${total}`);
             updateStock();
-            connection.end();
 
         } else {
             console.log("Insufficient stock!");
-            console.log(`This item has: ${howManyOnHand[0]} on hand`);
-            // connection.end();
+            console.log(`This item has : ${howManyOnHand[0]} on hand`);
+            connection.end();
 
         };
     });
-    // connection.end();
-    // updateStock();
 };
 
 function updateStock() {
     let updateSql = connection.query(`UPDATE bamazon_DB.products SET stock_quantity = ${howManyOnHand[1]} WHERE (item_id = ${itemId[0]});`, (err, res) => {
-        console.log(res);
+        // console.log(res);
         if (err) {
             throw err;
-        };
-
-        // connection.end();
+        }else{
+            connection.end();
+        }
     });
-
-    // connection.end();
 
 };
