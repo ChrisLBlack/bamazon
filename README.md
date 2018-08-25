@@ -4,3 +4,4 @@
 
 The app useses the npm "inquirer" to ask the user the question "What is the 'ID Number' of the product you would like to buy?". Below, we're entering 4001 for tooth brushes. 
 
+![picture](images/question.png)
